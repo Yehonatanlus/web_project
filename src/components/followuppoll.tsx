@@ -51,7 +51,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
       if (response.data.success) {
         let new_polls = response.data.polls;
         new_polls.forEach((p: any, i: number) => {
-          p.label = p.question;
+          p.label = `#${p.poll_id} ${p.question}`;
           p.id = i;
           p.answers = p.answers.map((a: any, j: any) => {
             return { label: a, id: j };
@@ -65,7 +65,6 @@ export default function FollowupPoll({}: FollowupPollProps) {
   const sendPoll = () => {
     const ans: any = answer;
     if (pt.question.length != 0 && followupBranch != null && answer != null) {
-      console.log(pt);
       let poll = pollsState.polls[followupBranch];
       axios
         .post("/api/followuppolls", {

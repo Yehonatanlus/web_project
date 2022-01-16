@@ -28,11 +28,10 @@ export default function MainApp(props :any) : any {
         }
       })
       .then((response) => {
-        // console.log(response);
         setLogin(1);        
       }).catch((error) => {
         if (error.response) {
-            console.log(error.response);
+           // console.log(error.response);
           }
       })
   }
