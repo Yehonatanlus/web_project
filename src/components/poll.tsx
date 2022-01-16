@@ -74,12 +74,9 @@ export default function Poll({poll_tree,use_centering,margin,isRecursive}:PollPr
     <Box
       component="div"
       style= {{width: "100%",margin:margin,textAlign: "center"}}
-      //sx={{
-        //'& > :not(style)': { m: 1, width: '25ch' },
-      ///}}
     >
     <div style={{marginLeft:"auto",marginRight: "auto"}}> 
-      <TextField label="Question" variant="outlined" value={question}onChange={onPollChange}></TextField> 
+      <TextField label="Question" variant="outlined" value={question}onChange={onPollChange} autoComplete='off'></TextField> 
     
       {   answers.length > 0 ?  <ImageList cols={ use_centering ? answers.length+2 : answers.length} key={-5}>
                     {use_centering==true ? <ImageListItem key={-1}></ImageListItem> : null}

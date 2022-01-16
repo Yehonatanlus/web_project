@@ -22,6 +22,7 @@ export default function Answer({
       <TextField
         label="Answer"
         variant="outlined"
+        autoComplete='off'
         value={p_answer}
         onChange={onAnswerChangeEvent}
       />
