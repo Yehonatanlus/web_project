@@ -6,7 +6,7 @@ export interface AnswerProps {
   p_answer: String;
   answer_number: number;
   all_answers: String[];
-  onAnswerChange: (answer: String, answer_number: number) => void;
+  onAnswerChange: (answer: string, answer_number: number) => void;
 }
 
 export default function Answer({
@@ -22,7 +22,7 @@ export default function Answer({
       <TextField
         label="Answer"
         variant="outlined"
-        autoComplete='off'
+        autoComplete="off"
         value={p_answer}
         onChange={onAnswerChangeEvent}
       />

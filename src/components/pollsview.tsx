@@ -8,7 +8,7 @@ export interface PollsViewProps {}
 
 export default function PollsView() {
   const polls: { question: string; answers: string[] }[] = [];
-  const [pollsState,setPollsState] = useState({ called: false, polls: polls });
+  const [pollsState, setPollsState] = useState({ called: false, polls: polls });
 
   if (pollsState.called == false) {
     axios.get("/api/polls").then((response) => {
@@ -16,7 +16,8 @@ export default function PollsView() {
         const new_polls = response.data.polls;
         setPollsState({ called: true, polls: new_polls });
       }
-    })}
+    });
+  }
 
   return (
     <Box

@@ -26,6 +26,7 @@ const style = {
 export interface FollowupPollProps {}
 
 export default function FollowupPoll({}: FollowupPollProps) {
+  const ref: any[] = [null];
   const polls: {
     father_poll_id: number | null;
     poll_id: number;
@@ -83,7 +84,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
               title: "Success!",
               message: "Poll sent successfully",
             });
-            //const  pt = new PollTree("")
+            if (ref[0]!=null){ref[0]({target: {value: ""}})}
           } else
             setModalState({
               isOpen: true,
@@ -146,6 +147,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
       />
       {followupBranch == null || answer == null ? null : (
         <Poll
+          reff={ref}
           poll_tree={pt}
           use_centering={false}
           margin={16}

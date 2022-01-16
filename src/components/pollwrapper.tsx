@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Poll from "./poll";
 import { Button } from "@mui/material";
 import { PollTree } from "../PollTree";
@@ -23,13 +23,13 @@ const style = {
 export interface PollWrapperProps {}
 
 export default function PollWrapper({}: PollWrapperProps) {
-  const pt = new PollTree("");
+  const ref: any[] = [null];
   const [modalState, setModalState] = useState({
     isOpen: false,
     title: "",
     message: "",
   });
-  const [ptState, setPtState] = useState(pt);
+  const [ptState, setPtState] = useState(new PollTree(""));
 
   const sendPoll = () => {
     if (ptState.question.length != 0) {
@@ -42,8 +42,10 @@ export default function PollWrapper({}: PollWrapperProps) {
               title: "Success!",
               message: "Poll sent successfully",
             });
-            const pt = new PollTree("");
-            setPtState(pt);
+            setPtState(new PollTree(""));
+            if (ref[0] != null) {
+              ref[0]({target: {value: ""}});
+            }
           } else
             setModalState({
               isOpen: true,
@@ -63,6 +65,7 @@ export default function PollWrapper({}: PollWrapperProps) {
   return (
     <React.Fragment>
       <Poll
+        reff={ref}
         poll_tree={ptState}
         use_centering={true}
         margin={8}
