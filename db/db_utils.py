@@ -16,11 +16,12 @@ CREATE DATABASE projectdb;
 DROP DATABASE projectdb;
 '''
 
+
 def authenticate_admin(username, password):
     m = hashlib.sha256()
     m.update((password + SALT).encode('utf-8'))
-    hashed_password = m.hexdigest()    
-    admin = Admin.query.filter_by(username=username, password = hashed_password).first()
+    hashed_password = m.hexdigest()
+    admin = Admin.query.filter_by(username=username, password=hashed_password).first()
     if admin:
         return True
     else:
@@ -38,8 +39,9 @@ def register_admin(username, password):
         db.session.commit()
         return True
     else:
-        return False    
-# 
+        return False
+    #
+
 
 def delete_admin(username):
     admin = Admin.query.filter_by(username=username).first()
@@ -47,7 +49,7 @@ def delete_admin(username):
         return False
     else:
         db.session.delete(admin)
-        db.session.commit()        
+        db.session.commit()
         return True
 
 
@@ -97,6 +99,7 @@ def add_tree_poll_inner(tree_poll, max_poll_id, father, branch):
         elements_to_add += new_elements_to_add
         answers_to_add[i].son_pol_id = son_poll_id
     return elements_to_add, max_poll_id, poll_id
+
 
 def add_followup_poll(poll):
     new_poll_id = db.session.query(func.max(Poll.poll_id)).scalar() + 1
@@ -166,7 +169,8 @@ def get_all_registered_users_answered(poll_id, answer_number):
     registered_users_answered = []
     for i in range(len(registererd_users)):
         for j in range(len(registererd_users[i].votes)):
-            if registererd_users[i].votes[j].poll_id == poll_id and registererd_users[i].votes[j].answer_number == answer_number:
+            if registererd_users[i].votes[j].poll_id == poll_id and registererd_users[i].votes[
+                j].answer_number == answer_number:
                 registered_users_answered.append(registererd_users[i].chat_id)
                 break
     print(registered_users_answered)
@@ -187,8 +191,24 @@ def get_all_polls():
     return polls
 
 
+def get_root_polls_from_db():
+    polls = Poll.query.filter_by(father_poll_id=None).all()
+    polls = [{"poll_id": p.poll_id,
+              "root_poll_id": p.root_poll_id,
+              "father_poll_id": p.father_poll_id,
+              "question": p.desc,
+              "answers": [
+                  a.desc
+                  for a in p.answers],
+              }
+             for p in polls]
+    return polls
+
+
+def get_followuppoll_from_db(father_poll_id, branch_answer_number):
+    return Poll.query.filter_by(father_poll_id=father_poll_id,
+                                branch_answer_number=branch_answer_number).first()
+
 ##############################################################################
 # add all feature related to querying the DB ith polls
 ##############################################################################
-
-
