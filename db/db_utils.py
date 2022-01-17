@@ -191,12 +191,12 @@ def get_all_polls():
     return polls
 
 def clean_db():
-    User.query.delete()
     Admin.query.delete()
-    Answer.query.delete()
-    Poll.query.delete()
     Vote.query.delete()
+    Answer.query.delete()
     PollMessage.query.delete()
+    Poll.query.delete()
+    User.query.delete()
 
 
 def get_root_polls_from_db():
