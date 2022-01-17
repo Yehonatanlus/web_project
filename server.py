@@ -99,6 +99,7 @@ def logout():
 
 
 @app.route("/api/polls", methods=["POST"])
+@jwt_required()
 def create_poll():
     tree_poll = request.get_json()["tree_poll"]
     poll_id = add_tree_poll(tree_poll)
@@ -110,6 +111,7 @@ def create_poll():
 
 
 @app.route("/api/followuppolls", methods=["POST"])
+@jwt_required()
 def create_followuppoll():
     poll = request.get_json()["poll"]
     poll_id, message = add_followup_poll(poll)
@@ -123,16 +125,19 @@ def create_followuppoll():
 
 
 @app.route("/api/polls", methods=["GET"])
+@jwt_required()
 def get_polls():
     return jsonify({"success": True, "polls": get_all_polls()})
 
 
 @app.route("/api/rootpolls")
+@jwt_required()
 def get_root_polls():
     return jsonify({"success": True, "polls": get_root_polls_from_db()})
 
 
 @app.route("/api/followuppoll")
+@jwt_required()
 def get_followuppoll():
     father_poll_id = request.args.get('father_poll_id')
     branch_answer_number = request.args.get('branch_answer_number')
@@ -149,8 +154,6 @@ def get_followuppoll():
 
 
 @app.route("/api/votes", methods=["POST"])
-# Once you finih I simply need to add this decorator to make it authenticated required api
-# @jwt_required()
 def create_vote():
     chat_id = request.get_json()["chat_id"]
     t_poll_id = request.get_json()["t_poll_id"]
@@ -160,6 +163,20 @@ def create_vote():
         t_poll_id, message_id = send_poll(chat_id, question, answers)
         add_poll_message(t_poll_id, message_id, chat_id, poll_id)
     return jsonify({"success": True})
+
+
+@app.route("/api/votes", methods=["GET"])
+@jwt_required()
+def get_all_votes():
+    print('im here')
+    poll_id = request.get_json()["poll_id"]
+    print("poll id is : ")
+    print(poll_id)
+    if(not poll_id is None):
+        return jsonify({"votes": db_get_all_votes(poll_id)})
+    else:
+        return jsonify({"votes": []})
+    
 
 
 # Serve react UI

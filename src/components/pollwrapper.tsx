@@ -7,6 +7,7 @@ import axios from "axios";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import useToken from './useToken';
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,11 +31,12 @@ export default function PollWrapper({}: PollWrapperProps) {
     message: "",
   });
   const [ptState, setPtState] = useState(new PollTree(""));
+  const { getToken, removeToken, setToken } = useToken();
 
   const sendPoll = () => {
     if (ptState.question.length != 0) {
       axios
-        .post("/api/polls", { tree_poll: ptState.ToJson() })
+        .post("/api/polls", { tree_poll: ptState.ToJson() }, { headers: {Authorization: 'Bearer ' + getToken()}})
         .then((response) => {
           if (response.data.success) {
             setModalState({

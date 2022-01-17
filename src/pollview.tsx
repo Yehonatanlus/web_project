@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import useToken from './components/useToken';
 
 export interface PollViewProps {
   poll_id: number;
@@ -26,6 +27,7 @@ export default function PollView({
     })
   );
 
+  const { getToken, removeToken, setToken } = useToken();
   const handleAnswerClick = (i: number) => {
     return () => {
       if (AnsweresClick[i].isOpen) {
@@ -38,6 +40,7 @@ export default function PollView({
               father_poll_id: poll_id,
               branch_answer_number: i,
             },
+            headers: {Authorization: 'Bearer ' + getToken()}
           })
           .then((response) => {
             if (response.data.success && response.data.poll != null) {

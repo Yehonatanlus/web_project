@@ -3,15 +3,17 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import PollView from "../pollview";
 import axios from "axios";
+import useToken from "./useToken";
 
 export interface PollsViewProps {}
 
 export default function PollsView() {
   const polls: { poll_id:number, question: string; answers: string[] }[] = [];
   const [pollsState, setPollsState] = useState({ called: false, polls: polls });
+  const { getToken, removeToken, setToken } = useToken();
 
   if (pollsState.called == false) {
-    axios.get("/api/rootpolls").then((response) => {
+    axios.get("/api/rootpolls", { headers: {Authorization: 'Bearer ' + getToken()}}).then((response) => {
       if (response.data.success) {
         const new_polls = response.data.polls;
         setPollsState({ called: true, polls: new_polls });

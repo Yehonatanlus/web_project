@@ -197,6 +197,19 @@ def get_all_polls():
              for p in polls]
     return polls
 
+def db_get_all_votes(poll_id):
+    votes = Vote.query.filter_by(poll_id = poll_id).all()
+    chat_ids = [ vote.chat_id for vote in votes]
+    users = User.query.filter(User.chat_id.in_(chat_ids)).all()
+    result = [{"chat_id": vote.chat_id,
+                "username": (next(item for item in users if item["chat_id"] == vote.chat_id)).username ,
+                "answer_number": vote.answer_number}
+             for vote in votes]
+    return result
+
+
+
+
 def clean_db():
     Admin.query.delete()
     Vote.query.delete()

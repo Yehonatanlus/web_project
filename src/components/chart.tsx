@@ -31,15 +31,16 @@ function Chart(props) {
       endAngle: -90,
     });
 
-    series.data.setAll([
-      { value: 10, category: "One" },
-      { value: 9, category: "Two" },
-      { value: 6, category: "Three" },
-      { value: 5, category: "Four" },
-      { value: 4, category: "Five" },
-      { value: 3, category: "Six" },
-      { value: 1, category: "Seven" },
-    ]);
+    // series.data.setAll([
+    //   { value: 10, category: "One" },
+    //   { value: 9, category: "Two" },
+    //   { value: 6, category: "Three" },
+    //   { value: 5, category: "Four" },
+    //   { value: 4, category: "Five" },
+    //   { value: 3, category: "Six" },
+    //   { value: 1, category: "Seven" },
+    // ]);
+    series.data.setAll(props.votes);
 
     series.appear(1000, 100);
 

@@ -23,8 +23,8 @@ import axios from "axios";
 export default function PollsResults() {
   const emptyPolls: { label: string; id: number; answers: { label: string }[] }[] = [];
 
-  const [followupBranch, setfollowupBranch] = useState([null, null]);
-  const [answer, setanswer] = useState([null, null]);
+  const [question, setQuestion] = useState(null);
+  const [answerList, setAnswerList] = useState(null);
   const [polls, setPolls] = useState([]);
   const [votes, setVotes] = useState([]);
   const { getToken, removeToken, setToken } = useToken();
@@ -58,8 +58,34 @@ export default function PollsResults() {
           console.log(error.response);
         }
     })
-
   }
+
+  // useEffect (() => {
+  //   getAllVotes();
+  // }, []);
+
+  const getAllVotes = (poll_id) => {
+    console.log(poll_id)
+    axios({
+      method: "GET",
+      url:"/api/votes",
+      data:{
+        poll_id: poll_id
+      },
+      headers: {
+          Authorization: 'Bearer ' + getToken()
+      }
+    })
+    .then((response) => {  
+      if (response.data.votes) {
+        setVotes(response.data.votes)
+      }
+    }).catch((error) => {
+      if (error.response) {
+          console.log(error.response);
+        }
+    })
+  }  
 
   return (
     <div>
@@ -80,94 +106,48 @@ export default function PollsResults() {
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Question" />}
             value={
-              followupBranch[0] != null ? polls[followupBranch[0]] : null
+              question != null ? polls[question] : null
             }
             onChange={(e: any, value: any) => {
-              setfollowupBranch([
-                value != null ? value.id : null,
-                followupBranch[1],
-              ]);
-              setanswer(
-                value == null || value.id != followupBranch[0]
-                  ? [null, answer[1]]
-                  : answer
+              setQuestion(value != null ? value.id : null);
+              setAnswerList(
+                value == null || value.id != question
+                  ? null
+                  : answerList
               );
+              if (question != null){
+                getAllVotes(polls[question].poll_id);
+                console.log(votes)
+              }
+
+
             }}
-          />
-          <Autocomplete
-            style={{ marginLeft: "auto", marginRight: "auto" }}
-            disablePortal
-            options={
-              followupBranch[0] != null
-                ? polls[followupBranch[0]].answers
-                : []
-            }
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Answer" />}
-            value={answer[0] != null ? { label: answer[0] } : null}
-            onChange={(e: any, value: any) =>
-              setanswer([value != null ? value.label : null, answer[1]])
-            }
-            isOptionEqualToValue={(option, value) =>
-              option.label == value.label
-            }
           />
         </Box>
-        {/* <Box
-          component="div"
-          style={{ width: "100%", margin: 8, textAlign: "center" }}
-        >
-          <Autocomplete
-            style={{
-              margin: 8,
-              marginLeft: "auto",
-              marginRight: "auto",
-              display: "inline-block",
-            }}
-            disablePortal
-            options={questions}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Question" />}
-            value={
-              followupBranch[1] != null ? questions[followupBranch[1]] : null
-            }
-            onChange={(e: any, value: any) => {
-              setfollowupBranch([
-                followupBranch[0],
-                value != null ? value.id : null,
-              ]);
-              setanswer(
-                value == null || value.id != followupBranch[1]
-                  ? [answer[0], null]
-                  : answer
-              );
-            }}
-          />
-          <Autocomplete
-            style={{ marginLeft: "auto", marginRight: "auto" }}
-            disablePortal
-            options={
-              followupBranch[1] != null
-                ? questions[followupBranch[1]].answers
-                : emptyList
-            }
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Answer" />}
-            value={answer[1] != null ? { label: answer[1] } : null}
-            onChange={(e: any, value: any) =>
-              setanswer([answer[0], value != null ? value.label : null])
-            }
-            isOptionEqualToValue={(option, value) =>
-              option.label == value.label
-            }
-          />
-        </Box> */}
       </Stack>
       <Box
         component="div"
         style={{ width: "100%", margin: "auto", textAlign: "center" }}
       >
-       <Chart></Chart>
+       <Chart votes={votes}></Chart>
+       <Autocomplete
+            style={{ marginLeft: "auto", marginRight: "auto" }}
+            disablePortal
+            options={
+              question != null
+                ? polls[question].answers
+                : []
+            }
+            sx={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} label="Answer" />}
+            value={answerList != null ? { label: answerList } : null}
+            onChange={(e: any, value: any) =>
+              setAnswerList(value != null ? value.label : null)
+            }
+            isOptionEqualToValue={(option, value) =>
+              option.label == value.label
+            }
+          />
       </Box>
     </div>
   );

@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { Modal } from "@mui/material";
 import { Button } from "@mui/material";
+import useToken from './useToken';
 
 const style = {
   position: "absolute" as "absolute",
@@ -36,6 +37,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
     question: string;
     id: number;
   }[] = [];
+  const { getToken, removeToken, setToken } = useToken();
   const [followupBranch, setfollowupBranch] = useState(null);
   const [answer, setanswer] = useState(null);
   const [pollsState, setPolls] = useState({ called: false, polls: polls });
@@ -47,7 +49,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
   const emptyList: any[] = [];
   const pt = new PollTree("");
   if (pollsState.called == false) {
-    axios.get("/api/polls").then((response) => {
+    axios.get("/api/polls", { headers: {Authorization: 'Bearer ' + getToken()}}).then((response) => {
       if (response.data.success) {
         let new_polls = response.data.polls;
         new_polls.forEach((p: any, i: number) => {
