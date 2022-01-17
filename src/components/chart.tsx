@@ -3,7 +3,7 @@ import * as am5 from "@amcharts/amcharts5";
 import * as am5percent from "@amcharts/amcharts5/percent";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 
-function Chart() {
+function Chart(props) {
   useLayoutEffect(() => {
     const root = am5.Root.new("chartdiv");
     root.setThemes([am5themes_Animated.new(root)]);
@@ -11,6 +11,11 @@ function Chart() {
       am5percent.PieChart.new(root, {
         endAngle: 270,
         radius: am5.percent(70),
+        layout: root.horizontalLayout,
+        centerY: am5.percent(50),
+        centerX: am5.percent(50),
+        y: am5.percent(50),
+        x: am5.percent(50),
       })
     );
     const series = chart.series.push(
@@ -18,6 +23,7 @@ function Chart() {
         valueField: "value",
         categoryField: "category",
         endAngle: 270,
+        legendValueText: ": {value}"
       })
     );
 
@@ -36,6 +42,17 @@ function Chart() {
     ]);
 
     series.appear(1000, 100);
+
+    // Add legend
+    let legend = chart.children.push(am5.Legend.new(root, {
+      centerY: am5.percent(50),
+      centerX: am5.percent(80),
+      y: am5.percent(50),
+      x: am5.percent(80),
+      layout: root.verticalLayout,
+    }));
+
+    legend.data.setAll(series.dataItems);
   },[]);
 
   return <div id="chartdiv" style={{ width: "100%", height: "400px" }}></div>;

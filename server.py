@@ -26,7 +26,6 @@ def create_user():
     return jsonify({"success": status})
 
 
-
 @app.route("/api/admins", methods=["POST"])
 @jwt_required()
 def create_admin():
@@ -115,7 +114,7 @@ def create_followuppoll():
     return jsonify({"success": True})
 
 
-@app.route("/api/polls")
+@app.route("/api/polls", methods=["GET"])
 def get_polls():
     return jsonify({"success": True, "polls": get_all_polls()})
 
@@ -132,6 +131,7 @@ def create_vote():
         t_poll_id, message_id = send_poll(chat_id, question, answers)
         add_poll_message(t_poll_id, message_id, chat_id, poll_id)
     return jsonify({"success": True})
+
 # Serve react UI
 @app.route('/')
 def root():
@@ -148,5 +148,7 @@ def root():
 if __name__ == "__main__":
     # create_all should creates only tables that do not exist
     db.create_all()
+    # In case we need to clean the db
+    # clean_db()
     register_admin(username = config.ADMIN_DEFAULT_USERNAME, password = config.ADMIN_DEFAULT_PASSWORD)
     app.run(debug=True)

@@ -31,7 +31,7 @@ export default function MainApp(props :any) : any {
         setLogin(1);        
       }).catch((error) => {
         if (error.response) {
-           // console.log(error.response);
+            console.log(error.response);
           }
       })
   }

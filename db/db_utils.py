@@ -186,6 +186,14 @@ def get_all_polls():
              for p in polls]
     return polls
 
+def clean_db():
+    User.query.delete()
+    Admin.query.delete()
+    Answer.query.delete()
+    Poll.query.delete()
+    Vote.query.delete()
+    PollMessage.query.delete()
+
 
 ##############################################################################
 # add all feature related to querying the DB ith polls

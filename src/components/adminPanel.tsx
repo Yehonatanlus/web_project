@@ -202,9 +202,6 @@ export default function AdminPanel() {
       }
   })
 
-
-
-
   function handleCreateAdmin() {
     axios({
       method: "POST",
@@ -271,9 +268,7 @@ export default function AdminPanel() {
             payload: 'User ' + removeState.username + ' does not exists'
           });
         }
-      }
-        
-      
+      }      
     }).catch((error) => {
       if (error.response) {
           console.log(error.response);
