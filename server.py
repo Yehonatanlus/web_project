@@ -169,6 +169,6 @@ if __name__ == "__main__":
     # create_all should creates only tables that do not exist
     db.create_all()
     # In case we need to clean the db
-    # clean_db()
+    clean_db()
     register_admin(username = config.ADMIN_DEFAULT_USERNAME, password = config.ADMIN_DEFAULT_PASSWORD)
     app.run(debug=True)

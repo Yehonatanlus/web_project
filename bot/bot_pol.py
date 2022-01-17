@@ -1,8 +1,10 @@
 from telegram import Bot
 
-TOKEN = "5037549878:AAGLNRhVtLmMdg-gBVF3JSOV1Hab5QJtZNI"
-bot = Bot(token=TOKEN)
+import sys
+sys.path.append('..')
+import config
 
+bot = Bot(token=config.TOKEN)
 
 def send_poll(chat_id, question, answers):
     res = bot.sendPoll(chat_id, question, answers, is_anonymous=False)

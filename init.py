@@ -3,14 +3,12 @@ from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, uns
 from datetime import datetime, timedelta, timezone
 from flask_sqlalchemy import SQLAlchemy
 from subprocess import call
+import config
 
 app = Flask(__name__)
 
 # DB related
-username = "postgres"
-password = "password"
-dbname = "projectdb"
-app.config["SQLALCHEMY_DATABASE_URI"] = f'postgresql://{username}:{password}@localhost:5432/{dbname}'
+app.config["SQLALCHEMY_DATABASE_URI"] = config.CONNECTION_STRING
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

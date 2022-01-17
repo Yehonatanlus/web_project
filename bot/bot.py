@@ -2,6 +2,10 @@ import logging
 from bot_errors import *
 from bot_utils import *
 
+import sys
+sys.path.append('..')
+import config
+
 from telegram import (
     Update,
 )
@@ -11,9 +15,6 @@ from telegram.ext import (
     CallbackContext,
     PollAnswerHandler,
 )
-
-TOKEN = "5037549878:AAGLNRhVtLmMdg-gBVF3JSOV1Hab5QJtZNI"
-# TOKEN = "5021462815:AAGZxJBUNXqxJIMwqhqFY8rvmg5sEgWY-M4"
 
 server_add = '127.0.0.1:5000'
 logging.basicConfig(
@@ -80,7 +81,7 @@ def vote(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     """Run bot."""
     # Create the Updater and pass it your bot's token.
-    updater = Updater(token=TOKEN)
+    updater = Updater(token=config.TOKEN)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start, run_async=True))
