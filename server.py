@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, \
+    JWTManager
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, timezone
@@ -7,7 +8,6 @@ from db.db_utils import *
 from bot.bot_pol import *
 from init import db, app, jwt
 import config
-
 
 
 @app.route("/api/users", methods=["DELETE"])
@@ -40,7 +40,8 @@ def create_admin():
 def remove_admin():
     identity = get_jwt_identity()
     username = request.get_json()["username"]
-    if (identity == config.ADMIN_DEFAULT_USERNAME and username != config.ADMIN_DEFAULT_USERNAME and delete_admin(username)):
+    if (identity == config.ADMIN_DEFAULT_USERNAME and username != config.ADMIN_DEFAULT_USERNAME and delete_admin(
+            username)):
         status = True
     else:
         status = False
@@ -51,9 +52,9 @@ def remove_admin():
 @jwt_required()
 def check_token():
     identity = get_jwt_identity()
-    is_root_identity = 0 
-    if(identity == config.ADMIN_DEFAULT_USERNAME):
-        is_root_identity = 1 
+    is_root_identity = 0
+    if (identity == config.ADMIN_DEFAULT_USERNAME):
+        is_root_identity = 1
     return jsonify({"status": "1", "is_root_admin": is_root_identity})
 
 
@@ -76,7 +77,7 @@ def login():
     password = request.json.get("password", None)
     if authenticate_admin(username, password):
         access_token = create_access_token(identity=username)
-        response = {"access_token":access_token}
+        response = {"access_token": access_token}
         return response
     else:
         return {"msg": "Wrong email or password"}, 401
@@ -87,7 +88,6 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
-
 
 
 @app.route("/api/polls", methods=["POST"])
@@ -119,6 +119,27 @@ def get_polls():
     return jsonify({"success": True, "polls": get_all_polls()})
 
 
+@app.route("/api/rootpolls")
+def get_root_polls():
+    return jsonify({"success": True, "polls": get_root_polls_from_db()})
+
+
+@app.route("/api/followuppoll")
+def get_followuppoll():
+    father_poll_id = request.args.get('father_poll_id')
+    branch_answer_number = request.args.get('branch_answer_number')
+    followuppoll = get_followuppoll_from_db(father_poll_id, branch_answer_number)
+    if followuppoll is None:
+        return jsonify({"success": True, "poll": None})
+    else:
+        poll = {
+            "poll_id": followuppoll.poll_id,
+            "question": followuppoll.desc,
+            "answers": [followuppoll.answers[i].desc for i in range(len(followuppoll.answers))]
+        }
+        return jsonify({"success": True, "poll": poll})
+
+
 @app.route("/api/votes", methods=["POST"])
 # Once you finih I simply need to add this decorator to make it authenticated required api
 # @jwt_required()
@@ -132,17 +153,16 @@ def create_vote():
         add_poll_message(t_poll_id, message_id, chat_id, poll_id)
     return jsonify({"success": True})
 
+
 # Serve react UI
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
 
+
 ######################################################################################
 # add here all routes related to creating/querying polls
 ######################################################################################
-
-
-
 
 
 if __name__ == "__main__":

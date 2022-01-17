@@ -44,7 +44,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
     title: "",
     message: "",
   });
-  const emptyList: never[] = [];
+  const emptyList: any[] = [];
   const pt = new PollTree("");
   if (pollsState.called == false) {
     axios.get("/api/polls").then((response) => {
