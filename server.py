@@ -26,6 +26,14 @@ def create_user():
     return jsonify({"success": status})
 
 
+@app.route("/api/get_all_admins", methods=["GET"])
+@jwt_required()
+def get_all_admins():
+    admins = db_get_all_admins()
+    admins.remove(config.ADMIN_DEFAULT_USERNAME)
+    return jsonify({"admins": admins})
+
+
 @app.route("/api/admins", methods=["POST"])
 @jwt_required()
 def create_admin():
@@ -39,13 +47,13 @@ def create_admin():
 @jwt_required()
 def remove_admin():
     identity = get_jwt_identity()
-    username = request.get_json()["username"]
-    if (identity == config.ADMIN_DEFAULT_USERNAME and username != config.ADMIN_DEFAULT_USERNAME and delete_admin(
-            username)):
+    admins = request.get_json()["admins"]
+    if (identity == config.ADMIN_DEFAULT_USERNAME and not(config.ADMIN_DEFAULT_USERNAME in admins) and db_delete_admins(
+            admins)):
         status = True
     else:
         status = False
-    return jsonify({"success": status, "delete_root_admin": username == config.ADMIN_DEFAULT_USERNAME})
+    return jsonify({"success": status, "delete_root_admin": not(config.ADMIN_DEFAULT_USERNAME in admins)})
 
 
 @app.route("/api/token", methods=["POST"])
@@ -169,6 +177,6 @@ if __name__ == "__main__":
     # create_all should creates only tables that do not exist
     db.create_all()
     # In case we need to clean the db
-    clean_db()
+    # clean_db()
     register_admin(username = config.ADMIN_DEFAULT_USERNAME, password = config.ADMIN_DEFAULT_PASSWORD)
     app.run(debug=True)

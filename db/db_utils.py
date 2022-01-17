@@ -28,6 +28,14 @@ def authenticate_admin(username, password):
         return False
 
 
+def db_get_all_admins():
+    admins = Admin.query.all()
+    result = []
+    for curr_admin in admins:
+        result.append(curr_admin.username)
+    return result
+
+
 def register_admin(username, password):
     admin = Admin.query.filter_by(username=username).first()
     if admin is None:
@@ -43,14 +51,13 @@ def register_admin(username, password):
     #
 
 
-def delete_admin(username):
-    admin = Admin.query.filter_by(username=username).first()
-    if admin is None:
-        return False
-    else:
-        db.session.delete(admin)
-        db.session.commit()
-        return True
+def db_delete_admins(admins):
+    for admin in admins:
+        curr_admin = Admin.query.filter_by(username=admin).first()
+        if not curr_admin is None:
+            db.session.delete(curr_admin)
+    db.session.commit()
+    return True
 
 
 def register_user_if_not_registered(chat_id, username):

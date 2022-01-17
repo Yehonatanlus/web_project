@@ -9,6 +9,15 @@ import axios from 'axios';
 import useToken from './useToken';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import CommentIcon from '@mui/icons-material/Comment';
+
 
 type CreateState = {
   username: string
@@ -81,7 +90,7 @@ type RemoveState = {
 const initialRemoveState:RemoveState = {
   username: '',
   isButtonDisabled: true,
-  helperText: 'Remove the specified admin',
+  helperText: 'Remove the specified admins',
   isError: false
 };
 
@@ -127,9 +136,42 @@ const removeReducer = (removeState: RemoveState, removeAction: RemoveAction): Re
 export default function AdminPanel() {
   const [isRootAdmin, setIsRootAdmin] = React.useState(0);
   const { getToken, removeToken, setToken } = useToken();
+  const [admins, setAdminsList] = React.useState([])
   const [createState, createDispatch] = React.useReducer(createReducer, initialCreateState);
   const [removeState, removeDispatch] = React.useReducer(removeReducer, initialRemoveState);
+  const [checked, setChecked] = React.useState([]);
   let token = getToken()
+
+
+  React.useEffect (() => {
+    getAllAdmins();
+  }, []);
+
+
+  const getAllAdmins = () => {
+    axios({
+      method: "GET",
+      url:"/api/get_all_admins",
+      headers: {
+          Authorization: 'Bearer ' + getToken()
+      }
+    })
+    .then((response) => {  
+        if(response.data.admins){
+          setAdminsList(response.data.admins);
+        }
+        if(response.data.admins.length === 0){
+          removeDispatch({
+            type: 'removeSuccess',
+            payload: 'No admin users to remove'
+          });
+        }
+    }).catch((error) => {
+      if (error.response) {
+          console.log(error.response);
+        }
+    })
+  }
 
   React.useEffect(() => {
     if (createState.username.trim() && createState.password.trim()) {
@@ -177,14 +219,6 @@ export default function AdminPanel() {
       });
     }
 
-    const handleRemoveUsernameChange: React.ChangeEventHandler<HTMLInputElement> =
-    (event) => {
-      removeDispatch({
-        type: 'setUsername',
-        payload: event.target.value
-      });
-    };
-
   axios({
     method: "POST",
     url:"/api/token",
@@ -201,6 +235,12 @@ export default function AdminPanel() {
         console.log(error.response);
       }
   })
+
+  const handleCreateKeyPress = (event: React.KeyboardEvent) => {
+    if (event.keyCode === 13 || event.which === 13) {
+      createState.isButtonDisabled || handleCreateAdmin();
+    }
+  };
 
   function handleCreateAdmin() {
     axios({
@@ -220,6 +260,11 @@ export default function AdminPanel() {
           type: 'createSuccess',
           payload: 'User ' + createState.username + ' created successfully'
         });
+        getAllAdmins();
+        removeDispatch({
+          type: 'removeSuccess',
+          payload: 'Remove the specified admins'
+        });          
       }
       else{
         createDispatch({
@@ -236,7 +281,6 @@ export default function AdminPanel() {
     })
   }
   
-  
   function handleRemoveAdmin() {
     axios({
       method: "DELETE",
@@ -245,15 +289,28 @@ export default function AdminPanel() {
           Authorization: 'Bearer ' + token
       },
       data:{
-        username: removeState.username
+        admins: checked
         }
     })
     .then((response) => {
       if (response.data.success === true){
+        if (checked.length > 1){
+          removeDispatch({
+            type: 'removeSuccess',
+            payload: 'Admins deleted successfully'
+          });
+        }else{
+          removeDispatch({
+            type: 'removeSuccess',
+            payload: 'Admin deleted successfully'
+          });          
+        }
+        setChecked([]);
         removeDispatch({
-          type: 'removeSuccess',
-          payload: 'User ' + removeState.username + ' deleted successfully'
+          type: 'setIsButtonDisabled',
+          payload: true
         });
+        getAllAdmins();
       }
       else{
         if (response.data.is_root_admin === true){
@@ -277,20 +334,69 @@ export default function AdminPanel() {
   
   }
 
+  const handleToggle = (value: number) => () => {    
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
 
-  let removeForm, divider;
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    
+    
+    setChecked(newChecked);
+    if (newChecked.length > 0){
+      removeDispatch({
+        type: 'setIsButtonDisabled',
+        payload: false
+      });
+    }
+    else{
+      removeDispatch({
+        type: 'setIsButtonDisabled',
+        payload: true
+      });
+    }
+  };
+
+  let removeList, divider;
   if (isRootAdmin){
-    removeForm = 
-                    <FormGroup sx={{ margin:5, width: '50ch' }}>
-                     <Typography variant="h4" gutterBottom component="div">Remove Admin</Typography>
-                     <OutlinedInput placeholder="username" onChange={handleRemoveUsernameChange}/>
-                     <FormHelperText id="component-remove-helper-text">{removeState.helperText}</FormHelperText>
-                     <Button variant="contained" onClick={handleRemoveAdmin} disabled={removeState.isButtonDisabled}>Remove</Button>
-                     </FormGroup>;
+    removeList =    <Box component="div">
+                    <Typography variant="h4" gutterBottom component="div">Remove Admin</Typography>
+                    <List sx={{ width: '100%', minWidth:400,  bgcolor: 'background.paper', maxHeight: 200, overflow: 'auto',}}>
+                    {admins.map((value) => {
+                      const labelId = `checkbox-list-label-${value}`;
+
+                      return (
+                        <ListItem
+                          key={value}
+                          disablePadding
+                        >
+                          <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={checked.indexOf(value) !== -1}
+                                tabIndex={-1}
+                                disableRipple
+                                inputProps={{ 'aria-labelledby': labelId }}
+                              />
+                            </ListItemIcon>
+                            <ListItemText id={labelId} primary={`${value}`} />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                    </List>
+                    <FormHelperText id="component-remove-helper-text">{removeState.helperText}</FormHelperText>
+                    <Button sx={{ width: '100%'}} variant="contained" onClick={handleRemoveAdmin} disabled={removeState.isButtonDisabled}>Remove</Button>
+                    </Box>
+
     divider = <Divider orientation="vertical" flexItem></Divider>;
   }
   else{
-    removeForm = null;
+    removeList = null
     divider = null;
   }
 
@@ -298,13 +404,13 @@ export default function AdminPanel() {
     <Box component="form" noValidate autoComplete="off" style={{margin:10, textAlign: "center", display: 'flex', alignItems:'center', justifyContent: 'center'}}>
       <FormGroup sx={{ margin:5, width: '50ch'}}>
         <Typography variant="h4" gutterBottom component="div">Create Admin</Typography>
-        <OutlinedInput placeholder="username" onChange={handleCreateUsernameChange}/>
-        <OutlinedInput placeholder="password" type="password" onChange={handleCreatePasswordChange}/>
+        <OutlinedInput placeholder="username" onChange={handleCreateUsernameChange} onKeyPress={handleCreateKeyPress}/>
+        <OutlinedInput placeholder="password" type="password" onChange={handleCreatePasswordChange} onKeyPress={handleCreateKeyPress}/>
         <FormHelperText id="component-create-helper-text">{createState.helperText}</FormHelperText>
         <Button variant="contained" onClick={handleCreateAdmin} disabled={createState.isButtonDisabled} >Create</Button>
       </FormGroup>
       {divider}
-      {removeForm}
+      {removeList}
     </Box>
   );
 }
