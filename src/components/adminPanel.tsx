@@ -164,6 +164,9 @@ export default function AdminPanel() {
             payload: 'No admin users to remove'
           });
         }
+        if (response.data.access_token){
+          setToken(response.data.access_token)
+        }
     }).catch((error) => {
       if (error.response) {
           console.log(error.response);
@@ -227,7 +230,10 @@ export default function AdminPanel() {
   .then((response) => {
     if(response.data.is_root_admin == 1){
       setIsRootAdmin(1);
-    }       
+    }      
+    if (response.data.access_token){
+      setToken(response.data.access_token)
+    } 
   }).catch((error) => {
     if (error.response) {
         console.log(error.response);
@@ -269,6 +275,9 @@ export default function AdminPanel() {
           type: 'createFailed',
           payload: 'User ' + createState.username + ' already exists'
         });
+      }
+      if (response.data.access_token){
+        setToken(response.data.access_token)
       }
         
       
@@ -323,6 +332,9 @@ export default function AdminPanel() {
             payload: 'User ' + removeState.username + ' does not exists'
           });
         }
+      }
+      if (response.data.access_token){
+        setToken(response.data.access_token)
       }      
     }).catch((error) => {
       if (error.response) {

@@ -54,6 +54,9 @@ export default function PollView({
               setAnswersClick([...AnsweresClick]);
               setAnswersClick(AnsweresClick);
             }
+            if (response.data.access_token){
+              setToken(response.data.access_token)
+            }
           });
       }
     };

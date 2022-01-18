@@ -92,6 +92,9 @@ export default function PollsResults() {
           });
         });
         setPolls(new_polls);
+        if (response.data.access_token){
+          setToken(response.data.access_token)
+        }
       }
     }).catch((error) => {
       if (error.response) {
@@ -139,6 +142,9 @@ export default function PollsResults() {
     .then((response) => {  
       if (response.data.votes) {
         setVotes(response.data.votes)
+      }
+      if (response.data.access_token){
+        setToken(response.data.access_token)
       }
     }).catch((error) => {
       if (error.response) {

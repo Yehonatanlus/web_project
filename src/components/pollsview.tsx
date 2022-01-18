@@ -19,6 +19,9 @@ export default function PollsView() {
         const new_polls = response.data.polls;
         setPollsState({ called: true, polls: new_polls });
       }
+      if (response.data.access_token){
+        setToken(response.data.access_token)
+      }
     });
   }
 

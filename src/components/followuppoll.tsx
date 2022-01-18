@@ -61,6 +61,9 @@ export default function FollowupPoll({}: FollowupPollProps) {
         });
         setPolls({ called: true, polls: new_polls });
       }
+      if (response.data.access_token){
+        setToken(response.data.access_token)
+      }
     });
   }
 
@@ -97,6 +100,9 @@ export default function FollowupPoll({}: FollowupPollProps) {
               title: "Failure!",
               message: response.data.error_description,
             });
+            if (response.data.access_token){
+              setToken(response.data.access_token)
+            }
         });}
         else{
           setModalState({

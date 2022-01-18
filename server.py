@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, \
     JWTManager
 
+import json
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, timezone
 from db.db_utils import *
@@ -80,6 +81,9 @@ def refresh_expiring_jwts(response):
         target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
+            data = response.get_json()
+            data["access_token"] = access_token
+            response.data = json.dumps(data)
         return response
     except (RuntimeError, KeyError):
         return response

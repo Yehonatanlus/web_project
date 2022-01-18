@@ -59,6 +59,9 @@ export default function PollWrapper({}: PollWrapperProps) {
                 title: "Failure!",
                 message: response.data.error_description,
               });
+              if (response.data.access_token){
+                setToken(response.data.access_token)
+              }
           });
       } else {
         setModalState({
