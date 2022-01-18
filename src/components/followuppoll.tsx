@@ -47,7 +47,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
     message: "",
   });
   const emptyList: any[] = [];
-  const pt = new PollTree("");
+  const [pt, setPtState] = useState(new PollTree(""));
   if (pollsState.called == false) {
     axios.get("/api/polls", { headers: {Authorization: 'Bearer ' + getToken()}}).then((response) => {
       if (response.data.success) {
@@ -68,16 +68,7 @@ export default function FollowupPoll({}: FollowupPollProps) {
     const ans: any = answer;
     if (pt.question.length != 0 && followupBranch != null && answer != null) {
       let poll = pollsState.polls[followupBranch];
-      // axios
-      //   .post("/api/followuppolls", {
-      //     poll: {
-      //       root_poll_id: poll.root_poll_id,
-      //       father_poll_id: poll.poll_id,
-      //       answer_number: ans.id,
-      //       question: pt.question,
-      //       answers: pt.answers.filter((a) => a.length != 0),
-      //     }, headers: {Authorization: 'Bearer ' + getToken()}
-      //   })
+        if(pt.validatePoll(pt)){
         axios({
           method: "POST",
           url:"/api/followuppolls",
@@ -106,7 +97,14 @@ export default function FollowupPoll({}: FollowupPollProps) {
               title: "Failure!",
               message: response.data.error_description,
             });
-        });
+        });}
+        else{
+          setModalState({
+            isOpen: true,
+            title: "Failure!",
+            message: "A poll must have at least two answers",
+          });
+        }
     } else {
       setModalState({
         isOpen: true,
