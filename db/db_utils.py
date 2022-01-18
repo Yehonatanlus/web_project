@@ -180,7 +180,6 @@ def get_all_registered_users_answered(poll_id, answer_number):
                 j].answer_number == answer_number:
                 registered_users_answered.append(registererd_users[i].chat_id)
                 break
-    print(registered_users_answered)
     return registered_users_answered
 
 
@@ -202,7 +201,7 @@ def db_get_all_votes(poll_id):
     chat_ids = [ vote.chat_id for vote in votes]
     users = User.query.filter(User.chat_id.in_(chat_ids)).all()
     result = [{"chat_id": vote.chat_id,
-                "username": (next(item for item in users if item["chat_id"] == vote.chat_id)).username ,
+                "username": (next(user for user in users if user.chat_id == vote.chat_id)).username ,
                 "answer_number": vote.answer_number}
              for vote in votes]
     return result

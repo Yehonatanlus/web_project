@@ -168,10 +168,7 @@ def create_vote():
 @app.route("/api/votes", methods=["GET"])
 @jwt_required()
 def get_all_votes():
-    print('im here')
-    poll_id = request.get_json()["poll_id"]
-    print("poll id is : ")
-    print(poll_id)
+    poll_id = request.args.get('poll_id')
     if(not poll_id is None):
         return jsonify({"votes": db_get_all_votes(poll_id)})
     else:
@@ -196,4 +193,4 @@ if __name__ == "__main__":
     # In case we need to clean the db
     # clean_db()
     register_admin(username = config.ADMIN_DEFAULT_USERNAME, password = config.ADMIN_DEFAULT_PASSWORD)
-    app.run(debug=True)
+    app.run(debug=True, port = config.SERVER_PORT)

@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect} from "react";
+import * as am5 from "@amcharts/amcharts5";
+import * as am5percent from "@amcharts/amcharts5/percent";
+import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -27,6 +30,7 @@ export default function PollsResults() {
   const [answerList, setAnswerList] = useState(null);
   const [polls, setPolls] = useState([]);
   const [votes, setVotes] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const { getToken, removeToken, setToken } = useToken();
 
   useEffect (() => {
@@ -60,16 +64,42 @@ export default function PollsResults() {
     })
   }
 
-  // useEffect (() => {
-  //   getAllVotes();
-  // }, []);
+
+  useEffect (() => {
+    createChartData();
+  }, [votes]);
+
+  const createChartData = () =>{
+    setChartData([
+        { value: 10, category: "One" },
+        { value: 9, category: "Two" },
+        { value: 6, category: "Three" },
+        { value: 5, category: "Four" },
+        { value: 4, category: "Five" },
+        { value: 3, category: "Six" },
+        { value: 1, category: "Seven" },
+      ]);
+    if(question != null){
+      let data = [];
+      if(votes.length > 0){
+        for (const answer of polls[question].answers) { data.push({value: 0, category: answer.label}); }
+        for (const vote of votes) { 
+          data[vote.answer_number].value += 1;
+        }
+        setChartData(data);
+      }
+      else{
+        for (const answer of polls[question].answers) { data.push({value: 0, category: answer.label}); }
+        setChartData(data);
+      }
+    }
+  };
 
   const getAllVotes = (poll_id) => {
-    console.log(poll_id)
     axios({
       method: "GET",
       url:"/api/votes",
-      data:{
+      params:{
         poll_id: poll_id
       },
       headers: {
@@ -88,18 +118,11 @@ export default function PollsResults() {
   }  
 
   return (
-    <div>
+    <Box>
       <Stack spacing={2} direction="row" justifyContent="center">
-        <Box
-          component="div"
-          style={{ width: "100%", margin: 8, textAlign: "center" }}
-        >
           <Autocomplete
             style={{
-              margin: 8,
-              marginLeft: "auto",
-              marginRight: "auto",
-              display: "inline-block",
+              padding: 20,
             }}
             disablePortal
             options={polls}
@@ -115,23 +138,15 @@ export default function PollsResults() {
                   ? null
                   : answerList
               );
-              if (question != null){
-                getAllVotes(polls[question].poll_id);
-                console.log(votes)
+              if (value != null){
+                getAllVotes(value.poll_id);
               }
-
-
             }}
           />
-        </Box>
-      </Stack>
-      <Box
-        component="div"
-        style={{ width: "100%", margin: "auto", textAlign: "center" }}
-      >
-       <Chart votes={votes}></Chart>
-       <Autocomplete
-            style={{ marginLeft: "auto", marginRight: "auto" }}
+        <Autocomplete
+            style={{              
+              padding: 20,
+              }}
             disablePortal
             options={
               question != null
@@ -141,14 +156,21 @@ export default function PollsResults() {
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Answer" />}
             value={answerList != null ? { label: answerList } : null}
-            onChange={(e: any, value: any) =>
-              setAnswerList(value != null ? value.label : null)
-            }
+            onChange={(e: any, value: any) => {
+              setAnswerList(value != null ? value.label : null);
+            }}
             isOptionEqualToValue={(option, value) =>
               option.label == value.label
             }
           />
+      </Stack>
+      <Box
+        component="div"
+        style={{ width: "100%", margin: "auto", textAlign: "center" }}
+      >
+       <Chart data={chartData}></Chart>
       </Box>
-    </div>
+    </Box>
+    
   );
 }
