@@ -8,8 +8,9 @@ import useToken from "./components/useToken";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import axios from "axios";
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import axios from "axios";
 
 
 // var questions: { label: string; id: number; answers: { label: string }[] }[] = [];
@@ -41,22 +42,6 @@ export default function PollsResults() {
 
   const generateUsersList = () => {
     if(currAnswer != null){
-      // axios({
-      //   method: "GET",
-      //   url:"/api/users",
-      //   headers: {
-      //       Authorization: 'Bearer ' + getToken()
-      //   }
-      // })
-      // .then((response) => {  
-      //   if (response.data.success) {
-      //       console.log(response.data.users_list)
-      //   }
-      // }).catch((error) => {
-      //   if (error.response) {
-      //       console.log(error.response);
-      //     }
-      // })
       var list_items = []
 
       for (const vote of votes) {
@@ -217,6 +202,7 @@ export default function PollsResults() {
         >
          <Chart data={chartData }></Chart>
         </Box>
+        {usersList ?  <Divider orientation="vertical" flexItem></Divider> : null}
         <List sx={{ width: '100%', maxWidth: 360, maxHeight:400  }}>
           {usersList ?  <Typography variant="h4" gutterBottom component="div" color="#2196f3">Users Answered</Typography> : null}
           {usersList}
