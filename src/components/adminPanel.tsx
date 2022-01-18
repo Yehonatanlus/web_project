@@ -361,7 +361,7 @@ export default function AdminPanel() {
   let removeList, divider;
   if (isRootAdmin){
     removeList =    <Box component="div">
-                    <Typography variant="h4" gutterBottom component="div">Remove Admin</Typography>
+                    <Typography variant="h4" gutterBottom component="div" color="#2196f3">Remove Admin</Typography>
                     <List sx={{ width: '100%', minWidth:400,  bgcolor: 'background.paper', maxHeight: 200, overflow: 'auto',}}>
                     {admins.map((value) => {
                       const labelId = `checkbox-list-label-${value}`;
@@ -401,7 +401,7 @@ export default function AdminPanel() {
   return (
     <Box component="form" noValidate autoComplete="off" style={{margin:10, textAlign: "center", display: 'flex', alignItems:'center', justifyContent: 'center'}}>
       <FormGroup sx={{ margin:5, width: '50ch'}}>
-        <Typography variant="h4" gutterBottom component="div">Create Admin</Typography>
+        <Typography variant="h4" gutterBottom component="div" color="#2196f3">Create Admin</Typography>
         <OutlinedInput placeholder="username" onChange={handleCreateUsernameChange} onKeyPress={handleCreateKeyPress}/>
         <OutlinedInput placeholder="password" type="password" onChange={handleCreatePasswordChange} onKeyPress={handleCreateKeyPress}/>
         <FormHelperText id="component-create-helper-text">{createState.helperText}</FormHelperText>

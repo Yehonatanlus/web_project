@@ -218,7 +218,7 @@ export default function PollsResults() {
          <Chart data={chartData }></Chart>
         </Box>
         <List sx={{ width: '100%', maxWidth: 360, maxHeight:400  }}>
-          {usersList ?  <Typography variant="h4" gutterBottom component="div">Users Answered</Typography> : null}
+          {usersList ?  <Typography variant="h4" gutterBottom component="div" color="#2196f3">Users Answered</Typography> : null}
           {usersList}
         </List>
       </Stack>
