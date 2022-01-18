@@ -1,10 +1,6 @@
 import subprocess
 import sys, os
 
-# Activating environemnet with conda
-os.system('conda init bash')
-os.system('conda activate web_project')
-
 # Creating server and bot processes
 curr_path = os.path.abspath(os.getcwd())
 proc_a = subprocess.Popen([r'python3', r'bot.py'], cwd=curr_path + '/bot')

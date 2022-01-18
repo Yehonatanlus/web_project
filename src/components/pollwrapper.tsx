@@ -7,7 +7,7 @@ import axios from "axios";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import useToken from './useToken';
+import useToken from "./useToken";
 
 const style = {
   position: "absolute" as "absolute",
@@ -35,26 +35,38 @@ export default function PollWrapper({}: PollWrapperProps) {
 
   const sendPoll = () => {
     if (ptState.question.length != 0) {
-      axios
-        .post("/api/polls", { tree_poll: ptState.ToJson() }, { headers: {Authorization: 'Bearer ' + getToken()}})
-        .then((response) => {
-          if (response.data.success) {
-            setModalState({
-              isOpen: true,
-              title: "Success!",
-              message: "Poll sent successfully",
-            });
-            setPtState(new PollTree(""));
-            if (ref[0] != null) {
-              ref[0]({target: {value: ""}});
-            }
-          } else
-            setModalState({
-              isOpen: true,
-              title: "Failure!",
-              message: response.data.error_description,
-            });
+      if (ptState.validatePoll(ptState)) {
+        axios
+          .post(
+            "/api/polls",
+            { tree_poll: ptState.ToJson() },
+            { headers: { Authorization: "Bearer " + getToken() } }
+          )
+          .then((response) => {
+            if (response.data.success) {
+              setModalState({
+                isOpen: true,
+                title: "Success!",
+                message: "Poll sent successfully",
+              });
+              setPtState(new PollTree(""));
+              if (ref[0] != null) {
+                ref[0]({ target: { value: "" } });
+              }
+            } else
+              setModalState({
+                isOpen: true,
+                title: "Failure!",
+                message: response.data.error_description,
+              });
+          });
+      } else {
+        setModalState({
+          isOpen: true,
+          title: "Failure!",
+          message: "A poll must have at least two answers",
         });
+      }
     } else {
       setModalState({
         isOpen: true,
