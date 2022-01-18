@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Box from "@mui/material/Box";
+import Divider from '@mui/material/Divider';
 import PollView from "../pollview";
 import axios from "axios";
 import useToken from "./useToken";
@@ -34,8 +35,10 @@ export default function PollsView() {
             question={poll.question}
             answers={poll.answers}
           ></PollView>
+          <Divider orientation="horizontal" variant="middle" flexItem ></Divider>
           <br></br>
           </React.Fragment>
+          
           
         ))}
       </div>

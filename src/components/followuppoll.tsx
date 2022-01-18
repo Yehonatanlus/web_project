@@ -68,15 +68,29 @@ export default function FollowupPoll({}: FollowupPollProps) {
     const ans: any = answer;
     if (pt.question.length != 0 && followupBranch != null && answer != null) {
       let poll = pollsState.polls[followupBranch];
-      axios
-        .post("/api/followuppolls", {
-          poll: {
+      // axios
+      //   .post("/api/followuppolls", {
+      //     poll: {
+      //       root_poll_id: poll.root_poll_id,
+      //       father_poll_id: poll.poll_id,
+      //       answer_number: ans.id,
+      //       question: pt.question,
+      //       answers: pt.answers.filter((a) => a.length != 0),
+      //     }, headers: {Authorization: 'Bearer ' + getToken()}
+      //   })
+        axios({
+          method: "POST",
+          url:"/api/followuppolls",
+          data: {          poll: {
             root_poll_id: poll.root_poll_id,
             father_poll_id: poll.poll_id,
             answer_number: ans.id,
             question: pt.question,
             answers: pt.answers.filter((a) => a.length != 0),
-          },
+          }},
+          headers: {
+              Authorization: 'Bearer ' + getToken()
+          }
         })
         .then((response) => {
           if (response.data.success) {

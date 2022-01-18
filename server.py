@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, \
     JWTManager
 
@@ -185,7 +185,8 @@ def get_all_votes():
 # Serve react UI
 @app.route('/')
 def root():
-    return app.send_static_file('index.html')
+    # return app.send_static_file('index.html')
+     return render_template("index.html")
 
 
 ######################################################################################

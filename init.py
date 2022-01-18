@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from subprocess import call
 import config
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./build/static", template_folder="./build")
 
 # DB related
 app.config["SQLALCHEMY_DATABASE_URI"] = config.CONNECTION_STRING
