@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useLayoutEffect} from "react";
-import * as am5 from "@amcharts/amcharts5";
-import * as am5percent from "@amcharts/amcharts5/percent";
-import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import Chart from "./components/chart";
 import useToken from "./components/useToken";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import axios from "axios";
+import Typography from '@mui/material/Typography';
 
 
 // var questions: { label: string; id: number; answers: { label: string }[] }[] = [];
@@ -24,14 +25,64 @@ import axios from "axios";
 
 
 export default function PollsResults() {
-  const emptyPolls: { label: string; id: number; answers: { label: string }[] }[] = [];
+  // const emptyPolls: { label: string; id: number; answers: { label: string }[] }[] = [];
 
   const [question, setQuestion] = useState(null);
-  const [answerList, setAnswerList] = useState(null);
+  const [currAnswer, setCurrAnswer] = useState(null);
   const [polls, setPolls] = useState([]);
   const [votes, setVotes] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [usersList, setUsersList] = useState(null);
   const { getToken, removeToken, setToken } = useToken();
+
+  useEffect (() => {
+    generateUsersList();
+  }, [currAnswer]);
+
+  const generateUsersList = () => {
+    if(currAnswer != null){
+      // axios({
+      //   method: "GET",
+      //   url:"/api/users",
+      //   headers: {
+      //       Authorization: 'Bearer ' + getToken()
+      //   }
+      // })
+      // .then((response) => {  
+      //   if (response.data.success) {
+      //       console.log(response.data.users_list)
+      //   }
+      // }).catch((error) => {
+      //   if (error.response) {
+      //       console.log(error.response);
+      //     }
+      // })
+      var list_items = []
+
+      for (const vote of votes) {
+        if(vote.answer_number === currAnswer.id){
+          list_items = list_items.concat([(
+            <ListItem>
+            <ListItemText
+              primary={vote.username}
+              secondary={"chat_id: "+ vote.chat_id}
+            />
+            </ListItem>
+          )])
+        }
+      }
+
+      if (list_items.length > 0){
+        setUsersList(list_items);
+      }else{
+        setUsersList(null);
+      }
+    }
+    else{
+      setUsersList(null);
+    }
+  }
+
 
   useEffect (() => {
     getAllPolls();
@@ -70,15 +121,6 @@ export default function PollsResults() {
   }, [votes]);
 
   const createChartData = () =>{
-    setChartData([
-        { value: 10, category: "One" },
-        { value: 9, category: "Two" },
-        { value: 6, category: "Three" },
-        { value: 5, category: "Four" },
-        { value: 4, category: "Five" },
-        { value: 3, category: "Six" },
-        { value: 1, category: "Seven" },
-      ]);
     if(question != null){
       let data = [];
       if(votes.length > 0){
@@ -92,6 +134,9 @@ export default function PollsResults() {
         for (const answer of polls[question].answers) { data.push({value: 0, category: answer.label}); }
         setChartData(data);
       }
+    }
+    else{
+      setChartData([]);
     }
   };
 
@@ -133,14 +178,15 @@ export default function PollsResults() {
             }
             onChange={(e: any, value: any) => {
               setQuestion(value != null ? value.id : null);
-              setAnswerList(
+              setCurrAnswer(
                 value == null || value.id != question
                   ? null
-                  : answerList
+                  : currAnswer
               );
               if (value != null){
                 getAllVotes(value.poll_id);
               }
+              setVotes([]);
             }}
           />
         <Autocomplete
@@ -155,21 +201,27 @@ export default function PollsResults() {
             }
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params} label="Answer" />}
-            value={answerList != null ? { label: answerList } : null}
+            value={currAnswer != null ? { label: currAnswer.label } : null}
             onChange={(e: any, value: any) => {
-              setAnswerList(value != null ? value.label : null);
+              setCurrAnswer(value != null ? value : null);
             }}
             isOptionEqualToValue={(option, value) =>
               option.label == value.label
             }
           />
       </Stack>
-      <Box
-        component="div"
-        style={{ width: "100%", margin: "auto", textAlign: "center" }}
-      >
-       <Chart data={chartData}></Chart>
-      </Box>
+      <Stack spacing={2} direction="row" justifyContent="center">
+        <Box
+          component="div"
+          style={{ width: "100%", margin: "auto", textAlign: "center" }}
+        >
+         <Chart data={chartData }></Chart>
+        </Box>
+        <List sx={{ width: '100%', maxWidth: 360, maxHeight:400  }}>
+          {usersList ?  <Typography variant="h4" gutterBottom component="div">Users Answered</Typography> : null}
+          {usersList}
+        </List>
+      </Stack>
     </Box>
     
   );

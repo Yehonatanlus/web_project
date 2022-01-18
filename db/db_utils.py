@@ -60,6 +60,14 @@ def db_delete_admins(admins):
     return True
 
 
+def db_get_all_usernames():
+    users = User.query.all()
+    result= []
+    for user in users:
+        result.append({"user": user.username, "chat_id": user.chat_id})
+    return result
+
+
 def register_user_if_not_registered(chat_id, username):
     user = User.query.filter_by(chat_id=chat_id).first()
     if user is None:

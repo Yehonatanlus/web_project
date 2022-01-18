@@ -26,6 +26,12 @@ def create_user():
     return jsonify({"success": status})
 
 
+@app.route("/api/users", methods=["GET"])
+def get_all_usernames():
+    result = db_get_all_usernames()
+    return jsonify({"success": True, "users_list": result})
+
+
 @app.route("/api/get_all_admins", methods=["GET"])
 @jwt_required()
 def get_all_admins():
