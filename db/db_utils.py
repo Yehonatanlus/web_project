@@ -1,4 +1,3 @@
-from tkinter.tix import ExFileSelectBox
 from db.models import *
 from init import db
 import hashlib

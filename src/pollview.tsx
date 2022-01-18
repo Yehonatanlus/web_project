@@ -32,6 +32,7 @@ export default function PollView({
     return () => {
       if (AnsweresClick[i].isOpen) {
         AnsweresClick[i].isOpen = false;
+        setAnswersClick([...AnsweresClick]);
         return;
       } else {
         axios

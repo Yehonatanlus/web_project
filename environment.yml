@@ -1,0 +1,17 @@
+name: web_project
+channels:
+  - defaults
+dependencies:
+  - pip
+  - flask
+  - sqlalchemy
+  - requests
+  - python=3.6.9
+  - pip:
+    - flask_jwt_extended
+    - flask_sqlalchemy
+    - python-telegram-bot 
+
+  
+  
+
